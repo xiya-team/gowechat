@@ -2,11 +2,11 @@ package util
 
 const (
 	// baseURL 微信请求基础URL
-	baseURL = "https://api.weixin.qq.com"
+	BaseURL = "https://api.weixin.qq.com"
 )
 
 // POST 参数
-type requestParams map[string]interface{}
+type RequestParams map[string]interface{}
 
 // URL 参数
-type requestQueries map[string]string
+type RequestQueries map[string]string

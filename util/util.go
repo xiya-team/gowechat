@@ -13,16 +13,16 @@ import (
 )
 
 // tokenAPI 获取带 token 的 API 地址
-func tokenAPI(api, token string) (string, error) {
-	queries := requestQueries{
+func TokenAPI(api, token string) (string, error) {
+	queries := RequestQueries{
 		"access_token": token,
 	}
 
-	return encodeURL(api, queries)
+	return EncodeURL(api, queries)
 }
 
 // encodeURL add and encode parameters.
-func encodeURL(api string, params requestQueries) (string, error) {
+func EncodeURL(api string, params RequestQueries) (string, error) {
 	url, err := url.Parse(api)
 	if err != nil {
 		return "", err
@@ -40,7 +40,7 @@ func encodeURL(api string, params requestQueries) (string, error) {
 }
 
 // getQuery returns url query value
-func getQuery(req *http.Request, key string) string {
+func GetQuery(req *http.Request, key string) string {
 	if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {
 		return values[0]
 	}
@@ -51,7 +51,7 @@ func getQuery(req *http.Request, key string) string {
 // randomString random string generator
 //
 // ln length of return string
-func randomString(ln int) string {
+func RandomString(ln int) string {
 	letters := []rune("1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, ln)
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -63,17 +63,7 @@ func randomString(ln int) string {
 }
 
 // postJSON perform a HTTP/POST request with json body
-func postJSON(url string, params interface{}, response interface{}) error {
-	resp, err := postJSONWithBody(url, params)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return json.NewDecoder(resp.Body).Decode(response)
-}
-
-func getJSON(url string, response interface{}) error {
+func GetJSON(url string, response interface{}) error {
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -85,7 +75,7 @@ func getJSON(url string, response interface{}) error {
 }
 
 // postJSONWithBody return with http body.
-func postJSONWithBody(url string, params interface{}) (*http.Response, error) {
+func PostJSONWithBody(url string, params interface{}) (*http.Response, error) {
 	reader := new(bytes.Reader)
 	if params != nil {
 		raw, err := json.Marshal(params)
@@ -99,7 +89,7 @@ func postJSONWithBody(url string, params interface{}) (*http.Response, error) {
 	return http.Post(url, "application/json; charset=utf-8", reader)
 }
 
-func postFormByFile(url, field, filename string, response interface{}) error {
+func PostFormByFile(url, field, filename string, response interface{}) error {
 	// Add your media file
 	file, err := os.Open(filename)
 	if err != nil {
@@ -110,7 +100,7 @@ func postFormByFile(url, field, filename string, response interface{}) error {
 	return postForm(url, field, filename, file, response)
 }
 
-func postForm(url, field, filename string, reader io.Reader, response interface{}) error {
+func PostForm(url, field, filename string, reader io.Reader, response interface{}) error {
 	// Prepare a form that you will submit to that URL.
 	buf := new(bytes.Buffer)
 	w := multipart.NewWriter(buf)

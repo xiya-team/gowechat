@@ -13,7 +13,7 @@ const (
 
 // LoginResponse 返回给用户的数据
 type LoginResponse struct {
-	common.CommonError
+	commons.CommonError
 	OpenID     string `json:"openid"`
 	SessionKey string `json:"session_key"`
 	// 用户在开放平台的唯一标识符
@@ -27,26 +27,26 @@ type LoginResponse struct {
 // secret 小程序的 app secret
 // code 小程序登录时获取的 code
 func Login(appID, secret, code string) (*LoginResponse, error) {
-	api := util.baseURL + apiLogin
+	api := util.BaseURL + apiLogin
 
 	return login(appID, secret, code, api)
 }
 
 func login(appID, secret, code, api string) (*LoginResponse, error) {
-	queries := util.requestQueries{
+	queries := util.RequestQueries{
 		"appid":      appID,
 		"secret":     secret,
 		"js_code":    code,
 		"grant_type": "authorization_code",
 	}
 
-	url, err := util.encodeURL(api, queries)
+	url, err := util.EncodeURL(api, queries)
 	if err != nil {
 		return nil, err
 	}
 
 	res := new(LoginResponse)
-	if err := util.getJSON(url, res); err != nil {
+	if err := util.GetJSON(url, res); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +55,7 @@ func login(appID, secret, code, api string) (*LoginResponse, error) {
 
 // TokenResponse 获取 access_token 成功返回数据
 type TokenResponse struct {
-	common.CommonError
+	commons.CommonError
 	AccessToken string `json:"access_token"` // 获取到的凭证
 	ExpiresIn   uint   `json:"expires_in"`   // 凭证有效时间，单位：秒。目前是7200秒之内的值。
 }
@@ -63,25 +63,25 @@ type TokenResponse struct {
 // GetAccessToken 获取小程序全局唯一后台接口调用凭据（access_token）。
 // 调调用绝大多数后台接口时都需使用 access_token，开发者需要进行妥善保存，注意缓存。
 func GetAccessToken(appID, secret string) (*TokenResponse, error) {
-	api := util.baseURL + apiGetAccessToken
+	api := util.BaseURL + apiGetAccessToken
 	return getAccessToken(appID, secret, api)
 }
 
 func getAccessToken(appID, secret, api string) (*TokenResponse, error) {
 
-	queries := util.requestQueries{
+	queries := util.RequestQueries{
 		"appid":      appID,
 		"secret":     secret,
 		"grant_type": "client_credential",
 	}
 
-	url, err := util.encodeURL(api, queries)
+	url, err := util.EncodeURL(api, queries)
 	if err != nil {
 		return nil, err
 	}
 
 	res := new(TokenResponse)
-	if err := util.getJSON(url, res); err != nil {
+	if err := util.GetJSON(url, res); err != nil {
 		return nil, err
 	}
 
@@ -90,18 +90,18 @@ func getAccessToken(appID, secret, api string) (*TokenResponse, error) {
 
 // GetPaidUnionIDResponse response data
 type GetPaidUnionIDResponse struct {
-	common.CommonError
+	commons.CommonError
 	UnionID string `json:"unionid"`
 }
 
 // GetPaidUnionID 用户支付完成后，通过微信支付订单号（transaction_id）获取该用户的 UnionId，
 func GetPaidUnionID(accessToken, openID, transactionID string) (*GetPaidUnionIDResponse, error) {
-	api := util.baseURL + apiGetPaidUnionID
+	api := util.BaseURL + apiGetPaidUnionID
 	return getPaidUnionID(accessToken, openID, transactionID, api)
 }
 
 func getPaidUnionID(accessToken, openID, transactionID, api string) (*GetPaidUnionIDResponse, error) {
-	queries := util.requestQueries{
+	queries := util.RequestQueries{
 		"openid":         openID,
 		"access_token":   accessToken,
 		"transaction_id": transactionID,
@@ -112,12 +112,12 @@ func getPaidUnionID(accessToken, openID, transactionID, api string) (*GetPaidUni
 
 // GetPaidUnionIDWithMCH 用户支付完成后，通过微信支付商户订单号和微信支付商户号（out_trade_no 及 mch_id）获取该用户的 UnionId，
 func GetPaidUnionIDWithMCH(accessToken, openID, outTradeNo, mchID string) (*GetPaidUnionIDResponse, error) {
-	api := util.baseURL + apiGetPaidUnionID
+	api := util.BaseURL + apiGetPaidUnionID
 	return getPaidUnionIDWithMCH(accessToken, openID, outTradeNo, mchID, api)
 }
 
 func getPaidUnionIDWithMCH(accessToken, openID, outTradeNo, mchID, api string) (*GetPaidUnionIDResponse, error) {
-	queries := util.requestQueries{
+	queries := util.RequestQueries{
 		"openid":       openID,
 		"mch_id":       mchID,
 		"out_trade_no": outTradeNo,
@@ -127,14 +127,14 @@ func getPaidUnionIDWithMCH(accessToken, openID, outTradeNo, mchID, api string) (
 	return getPaidUnionIDRequest(api, queries)
 }
 
-func getPaidUnionIDRequest(api string, queries util.requestQueries) (*GetPaidUnionIDResponse, error) {
-	url, err := util.encodeURL(api, queries)
+func getPaidUnionIDRequest(api string, queries util.RequestQueries) (*GetPaidUnionIDResponse, error) {
+	url, err := util.EncodeURL(api, queries)
 	if err != nil {
 		return nil, err
 	}
 
 	res := new(GetPaidUnionIDResponse)
-	if err := util.getJSON(url, res); err != nil {
+	if err := util.GetJSON(url, res); err != nil {
 		return nil, err
 	}
 
