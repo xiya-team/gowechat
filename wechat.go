@@ -60,6 +60,17 @@ func (wc *Wechat) MpMgr() (mp *MpMgr, err error) {
 	return
 }
 
+//MiniMgr 小程序
+func (wc *Wechat) MiniMgr() (mp *MiniMgr, err error) {
+	err = wc.checkCfgBase()
+	if err != nil {
+		return
+	}
+	mp = new(MiniMgr)
+	mp.Wechat = wc
+	return
+}
+
 //checkCfgBase 检查配置基本信息
 func (wc *Wechat) checkCfgBase() (err error) {
 	if wc.Context.AppID == "" {
