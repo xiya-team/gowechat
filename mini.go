@@ -2,7 +2,7 @@ package gowechat
 
 import (
 	"github.com/xiya-team/gowechat/mini/auth"
-	"gowechat/mini/decrypt"
+	"github.com/xiya-team/gowechat/mini/decrypt"
 )
 
 type MiniMgr struct {
