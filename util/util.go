@@ -97,7 +97,7 @@ func PostFormByFile(url, field, filename string, response interface{}) error {
 	}
 	defer file.Close()
 
-	return postForm(url, field, filename, file, response)
+	return PostForm(url, field, filename, file, response)
 }
 
 func PostForm(url, field, filename string, reader io.Reader, response interface{}) error {

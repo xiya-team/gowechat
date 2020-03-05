@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/xiya-team/gowechat/mini/commons"
+	"github.com/xiya-team/gowechat/mini/base"
 	"github.com/xiya-team/gowechat/util"
 )
 
@@ -21,36 +22,59 @@ type LoginResponse struct {
 	UnionID string `json:"unionid"`
 }
 
-// Login 登录凭证校验。通过 wx.login 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。
-//
-// appID 小程序 appID
-// secret 小程序的 app secret
-// code 小程序登录时获取的 code
-func Login(appID, secret, code string) (*LoginResponse, error) {
-	api := util.BaseURL + apiLogin
-
-	return login(appID, secret, code, api)
+//Pay pay
+type Auth struct {
+	base.MiniBase
 }
 
-func login(appID, secret, code, api string) (*LoginResponse, error) {
+//获取小程序全局唯一后台接口调用凭据（access_token）。调用绝大多数后台接口时都需使用 access_token，开发者需要进行妥善保存。
+// 文档 https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/access-token/auth.getAccessToken.html
+// GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+func (c *Auth) GetAccessToken(appID, secret string) (res *LoginResponse, err error) {
 	queries := util.RequestQueries{
 		"appid":      appID,
 		"secret":     secret,
-		"js_code":    code,
-		"grant_type": "authorization_code",
+		"grant_type": "client_credential",
 	}
+
+	api := util.BaseURL + apiGetAccessToken
 
 	url, err := util.EncodeURL(api, queries)
 	if err != nil {
 		return nil, err
 	}
 
-	res := new(LoginResponse)
 	if err := util.GetJSON(url, res); err != nil {
 		return nil, err
 	}
+	return
+}
 
-	return res, nil
+// 登录凭证校验
+// 文档 https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
+// GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
+// appID 小程序 appID
+// secret 小程序的 app secret
+// code 小程序登录时获取的 code
+// Login 登录凭证校验。通过 wx.login 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。
+func (c *Auth) Code2Session(appID, secret, code string) (res *LoginResponse, err error) {
+	queries := util.RequestQueries{
+		"appid":      appID,
+		"secret":     secret,
+		"js_code":    code,
+		"grant_type": "authorization_code",
+	}
+	api := util.BaseURL + apiLogin
+	url, err := util.EncodeURL(api, queries)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(LoginResponse)
+	if err := util.GetJSON(url, res); err != nil {
+		return nil, err
+	}
+	return
 }
 
 // TokenResponse 获取 access_token 成功返回数据
@@ -60,47 +84,18 @@ type TokenResponse struct {
 	ExpiresIn   uint   `json:"expires_in"`   // 凭证有效时间，单位：秒。目前是7200秒之内的值。
 }
 
-// GetAccessToken 获取小程序全局唯一后台接口调用凭据（access_token）。
-// 调调用绝大多数后台接口时都需使用 access_token，开发者需要进行妥善保存，注意缓存。
-func GetAccessToken(appID, secret string) (*TokenResponse, error) {
-	api := util.BaseURL + apiGetAccessToken
-	return getAccessToken(appID, secret, api)
-}
-
-func getAccessToken(appID, secret, api string) (*TokenResponse, error) {
-
-	queries := util.RequestQueries{
-		"appid":      appID,
-		"secret":     secret,
-		"grant_type": "client_credential",
-	}
-
-	url, err := util.EncodeURL(api, queries)
-	if err != nil {
-		return nil, err
-	}
-
-	res := new(TokenResponse)
-	if err := util.GetJSON(url, res); err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
 // GetPaidUnionIDResponse response data
 type GetPaidUnionIDResponse struct {
 	commons.CommonError
 	UnionID string `json:"unionid"`
 }
 
+// 用户支付完成后，获取该用户的 UnionId，无需用户授权。
+// 文档 https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/user-info/auth.getPaidUnionId.html
+// GET https://api.weixin.qq.com/wxa/getpaidunionid?access_token=ACCESS_TOKEN&openid=OPENID
 // GetPaidUnionID 用户支付完成后，通过微信支付订单号（transaction_id）获取该用户的 UnionId，
-func GetPaidUnionID(accessToken, openID, transactionID string) (*GetPaidUnionIDResponse, error) {
+func (c *Auth) GetPaidUnionId(accessToken, openID, transactionID string)(res *GetPaidUnionIDResponse, err error) {
 	api := util.BaseURL + apiGetPaidUnionID
-	return getPaidUnionID(accessToken, openID, transactionID, api)
-}
-
-func getPaidUnionID(accessToken, openID, transactionID, api string) (*GetPaidUnionIDResponse, error) {
 	queries := util.RequestQueries{
 		"openid":         openID,
 		"access_token":   accessToken,
@@ -127,16 +122,15 @@ func getPaidUnionIDWithMCH(accessToken, openID, outTradeNo, mchID, api string) (
 	return getPaidUnionIDRequest(api, queries)
 }
 
-func getPaidUnionIDRequest(api string, queries util.RequestQueries) (*GetPaidUnionIDResponse, error) {
+func getPaidUnionIDRequest(api string, queries util.RequestQueries) (res *GetPaidUnionIDResponse,err error) {
 	url, err := util.EncodeURL(api, queries)
 	if err != nil {
 		return nil, err
 	}
 
-	res := new(GetPaidUnionIDResponse)
+	res = new(GetPaidUnionIDResponse)
 	if err := util.GetJSON(url, res); err != nil {
 		return nil, err
 	}
-
-	return res, nil
+	return
 }
