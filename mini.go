@@ -9,6 +9,6 @@ type MiniMgr struct {
 }
 
 //GetAccessToken 获取access_token
-func (c *MiniMgr) GetAccessToken() *auth.Auth {
-	return auth.NewAuth(c.Context)
+func (wc *MiniMgr) GetNewAuth() *auth.Auth {
+	return auth.NewAuth(wc.Context)
 }
