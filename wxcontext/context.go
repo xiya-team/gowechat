@@ -1,10 +1,10 @@
 package wxcontext
 
 import (
+	"github.com/xiya-team/gowechat/util"
+	"io/ioutil"
 	"net/http"
 	"sync"
-
-	"github.com/xiya-team/gowechat/util"
 )
 
 // Context struct
@@ -53,15 +53,10 @@ func (ctx *Context) GetJsAPITicketLock() *sync.RWMutex {
 func (ctx *Context) InitHTTPClients() (err error) {
 	//create http client
 	if ctx.SslCertFilePath != "" && ctx.SslKeyFilePath != "" {
-		if client, err := util.NewTLSHttpClient(ctx.SslCertFilePath, ctx.SslKeyFilePath); err == nil {
-			ctx.SHTTPClient = client
-		} else {
-			return err
-		}
-	}
+		SslCertContent, _ := ioutil.ReadFile(ctx.SslCertFilePath)
+		SslKeyContent, _ := ioutil.ReadFile(ctx.SslKeyFilePath)
 
-	if ctx.SslCertContent != "" && ctx.SslKeyContent != "" {
-		if client, err := util.NewTLSHttpClientFromContent(ctx.SslCertContent, ctx.SslKeyContent); err == nil {
+		if client, err := util.NewTLSHttpClientFromContent(string(SslCertContent), string(SslKeyContent)); err == nil {
 			ctx.SHTTPClient = client
 		} else {
 			return err
