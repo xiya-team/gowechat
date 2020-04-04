@@ -96,10 +96,10 @@ func (wc *Wechat) checkCfgMch() (err error) {
 	if wc.Context.MchAPIKey == "" {
 		return fmt.Errorf("%s", "配置中没有MchAPIKey")
 	}
-	if wc.Context.SslCertFilePath == "" && wc.Context.SslCertContent == "" {
+	if wc.Context.SslCertFilePath == "" {
 		return fmt.Errorf("%s", "配置中没有SslCert")
 	}
-	if wc.Context.SslKeyFilePath == "" && wc.Context.SslKeyContent == "" {
+	if wc.Context.SslKeyFilePath == "" {
 		return fmt.Errorf("%s", "配置中没有SslKey")
 	}
 	//初始化 http client, 有错误会出错误

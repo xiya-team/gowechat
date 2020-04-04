@@ -60,13 +60,14 @@ func (ctx *Context) InitHTTPClients() (err error) {
 		}
 	}
 
-	if ctx.SslCertContent != "" && ctx.SslKeyContent != "" {
-		if client, err := util.NewTLSHttpClientFromContent(ctx.SslCertContent, ctx.SslKeyContent); err == nil {
-			ctx.SHTTPClient = client
-		} else {
-			return err
-		}
-	}
+	//if ctx.SslCertContent != "" && ctx.SslKeyContent != "" {
+	//	if client, err := util.NewTLSHttpClientFromContent(ctx.SslCertContent, ctx.SslKeyContent); err == nil {
+	//		ctx.SHTTPClient = client
+	//	} else {
+	//		return err
+	//	}
+	//}
+	
 	ctx.HTTPClient = http.DefaultClient
 	return
 }
