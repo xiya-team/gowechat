@@ -194,8 +194,7 @@ func (c *Pay) checkOrder(order OrderInput) (err error) {
 }
 
 //CheckPayNotifyData 检查pay notify url收到的消息，是否是返回成功
-func (c *Pay) CheckPayNotifyData(data []byte) (notify map[string]interface{}, err error) {
-	notify["is_success"] = false
+func (c *Pay) CheckPayNotifyData(data []byte) (out_trade_no string, err error) {
 	msg, err := base.ParseXMLToMap(bytes.NewReader(data))
 	if err != nil {
 		return
@@ -239,9 +238,8 @@ func (c *Pay) CheckPayNotifyData(data []byte) (notify map[string]interface{}, er
 			return
 		}
 
-		notify["out_trade_no"] = msg["out_trade_no"]
 		if result_code == base.ResultCodeSuccess {
-			notify["is_success"] = true
+			out_trade_no = msg["out_trade_no"]
 		}
 	}
 
