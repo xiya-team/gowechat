@@ -79,7 +79,8 @@ func (c *Pay) GetJsAPIConfig(order OrderInput) (config *WxPayInfo, err error) {
 	result["package"] = "prepay_id=" + prepayID
 	result["signType"] = "MD5"
 
-	sign := base.Sign(result, c.MchAPIKey, nil)
+	//sign := base.Sign(result, c.MchAPIKey, nil)
+	sign := base.WxPayCalcSign(result, c.MchAPIKey)
 	result["paySign"] = sign
 
 	config = new(WxPayInfo)
