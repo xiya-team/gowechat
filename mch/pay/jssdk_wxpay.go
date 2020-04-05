@@ -69,7 +69,7 @@ func (c *Pay) GetJsAPIConfig(order OrderInput) (config *WxPayInfo, err error) {
 		return
 	}
 
-	nocestr := util.RandomStr(8)
+	nocestr := util.RandomStr(32)
 	timestamp := fmt.Sprint(time.Now().Unix())
 
 	result := make(map[string]string)

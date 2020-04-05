@@ -94,10 +94,10 @@ func Sign(parameters map[string]string, apiKey string, fn func() hash.Hash) stri
 }
 
 //微信支付计算签名的函数
-func WxPayCalcSign(mReq map[string]string, key string) (sign string) {
+func WxPayCalcSign(parameters map[string]string, key string) (sign string) {
 	//STEP 1, 对key进行升序排序.
 	sorted_keys := make([]string, 0)
-	for k, _ := range mReq {
+	for k, _ := range parameters {
 		sorted_keys = append(sorted_keys, k)
 	}
 	sort.Strings(sorted_keys)
@@ -105,7 +105,7 @@ func WxPayCalcSign(mReq map[string]string, key string) (sign string) {
 	//STEP2, 对key=value的键值对用&连接起来，略过空值
 	var signStrings string
 	for _, k := range sorted_keys {
-		value := fmt.Sprintf("%v", mReq[k])
+		value := fmt.Sprintf("%v", parameters[k])
 		if value != "" {
 			signStrings = signStrings + k + "=" + value + "&"
 		}
