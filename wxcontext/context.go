@@ -1,7 +1,6 @@
 package wxcontext
 
 import (
-	"fmt"
 	"github.com/xiya-team/gowechat/util"
 	"io/ioutil"
 	"net/http"
@@ -56,8 +55,8 @@ func (ctx *Context) InitHTTPClients() (err error) {
 	if ctx.SslCertFilePath != "" && ctx.SslKeyFilePath != "" {
 		SslCertContent, _ := ioutil.ReadFile(ctx.SslCertFilePath)
 		SslKeyContent, _ := ioutil.ReadFile(ctx.SslKeyFilePath)
-		fmt.Println("SslCertContent:"+string(SslCertContent))
-		fmt.Println("SslKeyContent"+string(SslKeyContent))
+		//fmt.Println("SslCertContent:"+string(SslCertContent))
+		//fmt.Println("SslKeyContent"+string(SslKeyContent))
 		if client, err := util.NewTLSHttpClientFromContent(string(SslCertContent), string(SslKeyContent)); err == nil {
 			ctx.SHTTPClient = client
 		} else {
