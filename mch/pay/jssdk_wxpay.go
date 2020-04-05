@@ -194,13 +194,15 @@ func (c *Pay) checkOrder(order OrderInput) (err error) {
 }
 
 //CheckPayNotifyData 检查pay notify url收到的消息，是否是返回成功
-func (c *Pay) CheckPayNotifyData(data []byte) (isSuccess bool, err error) {
+func (c *Pay) CheckPayNotifyData(data []byte) (notify map[string]interface{}, err error) {
 	msg, err := base.ParseXMLToMap(bytes.NewReader(data))
 	if err != nil {
 		return
 	}
 	ReturnCode, ok := msg["return_code"]
 	if ReturnCode == base.ReturnCodeSuccess || !ok {
+		notify["msg"] = msg
+		notify["is_success"] = false
 		haveAppId := msg["appid"]
 		if haveAppId != c.AppID {
 			err = fmt.Errorf("get appid is not same as mine. AppID from response is %s. My server AppID is %s,", haveAppId, c.AppID)
@@ -239,7 +241,7 @@ func (c *Pay) CheckPayNotifyData(data []byte) (isSuccess bool, err error) {
 		}
 
 		if result_code == base.ResultCodeSuccess {
-			isSuccess = true
+			notify["is_success"] = true
 		}
 	}
 
