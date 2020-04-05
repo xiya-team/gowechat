@@ -9,3 +9,5 @@ conf/app.ini
 xiya.vip
 log/
 vendor
+go.mod
+go.sum
